@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CRUD</string>
+    <string name="edit_text">Enter The Task Name</string>
+</resources>

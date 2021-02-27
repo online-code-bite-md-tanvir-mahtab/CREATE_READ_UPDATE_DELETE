@@ -16,6 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".AddToTheList"/>
+        <provider
+            android:authorities="com.tanvircodder.crud.database"
+            android:name=".database.ListProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

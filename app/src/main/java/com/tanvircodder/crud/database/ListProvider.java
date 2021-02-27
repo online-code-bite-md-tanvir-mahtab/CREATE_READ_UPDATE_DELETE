@@ -1,10 +1,13 @@
 package com.tanvircodder.crud.database;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
@@ -35,7 +38,24 @@ public class ListProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        return null;
+        final SQLiteDatabase database = mDbHelper.getReadableDatabase();
+        Cursor cursor;
+        int match = sUriMatcher.match(uri);
+        switch(match){
+            case CRUD:
+                cursor = database.query(CURDContract.ListEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            default:
+                throw new SQLException("faild to load data");
+        }
+        cursor.setNotificationUri(getContext().getContentResolver(),uri);
+        return cursor;
     }
 
     @Nullable

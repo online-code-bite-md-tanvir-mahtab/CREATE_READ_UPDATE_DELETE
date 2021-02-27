@@ -1,16 +1,26 @@
 package com.tanvircodder.crud;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.AsyncTaskLoader;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+import com.tanvircodder.crud.database.CURDContract;
+
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 //    nwo i am going to declare the recyclerView../
     RecyclerView mRecyclerView;
     private ListAdapter mAdapter;
@@ -43,5 +53,37 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+        return new AsyncTaskLoader<Cursor>(this) {
+            private Cursor data = null;
+            @Nullable
+            @Override
+            public Cursor loadInBackground() {
+                try {
+                    data = getContentResolver().query(CURDContract.ListEntry.CONTENT_URI,
+                            null,
+                            null,
+                            null,
+                            null);
+                }catch (SQLException e){
+                    e.printStackTrace();
+                }
+                return data;
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+
     }
 }

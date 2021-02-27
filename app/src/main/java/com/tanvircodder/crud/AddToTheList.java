@@ -39,8 +39,8 @@ public class AddToTheList extends AppCompatActivity {
             if (insertUri == null){
                 Toast.makeText(getBaseContext(),"faild to insert the data",Toast.LENGTH_LONG).show();
             }else {
-                Toast.makeText(getBaseContext(),"data is inserted : " + insertUri.toString(),Toast.LENGTH_LONG).show();
                 Log.e(LOG_TAG, "data is inserted into the :" + values);
+                finish();
             }
         }
     }

@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.tanvircodder.crud.database.CURDContract;
+
 import org.w3c.dom.Text;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
@@ -29,12 +31,27 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
         // TODO: 2/25/2021 I also need to b bind the view with the proper statement..// and column
+
+
+        int columnIndex = mCursor.getColumnIndex(CURDContract.ListEntry.BOOK_NAME);
+        mCursor.moveToPosition(position);
+        String bookName = mCursor.getString(columnIndex);
+        holder.mTextView.setText(bookName);
     }
 
     @Override
     public int getItemCount() {
-        if (null == mCursor)return 0;
+        if (null == mCursor){
+            return 0;
+        }
         return mCursor.getCount();
+    }
+
+    public void swapCursor(Cursor data) {
+        mCursor = data;
+        if (data != null){
+            this.notifyDataSetChanged();
+        }
     }
 
     /*nwo i am going to create a class

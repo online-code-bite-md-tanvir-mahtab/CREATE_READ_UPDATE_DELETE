@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
-import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,14 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.tanvircodder.crud.database.CURDContract;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
+    private static final int LOADER_ID = 0;
 //    nwo i am going to declare the recyclerView../
     RecyclerView mRecyclerView;
     private ListAdapter mAdapter;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //        creating the instance of the adapter class..//
         mAdapter = new ListAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
+        getSupportLoaderManager().initLoader(LOADER_ID,null,this);
     }
 
     @Override
@@ -59,31 +61,50 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
         return new AsyncTaskLoader<Cursor>(this) {
-            private Cursor data = null;
+            Cursor mTaskData = null;
+
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
+                if (mTaskData != null){
+                    deleverresult(mTaskData);
+                }else {
+                    forceLoad();
+                }
+            }
+
             @Nullable
             @Override
             public Cursor loadInBackground() {
+                String[] projection = {
+                        CURDContract.ListEntry.BOOK_NAME
+                };
                 try {
-                    data = getContentResolver().query(CURDContract.ListEntry.CONTENT_URI,
-                            null,
+                    return getContentResolver().query(CURDContract.ListEntry.CONTENT_URI,
+                            projection,
                             null,
                             null,
                             null);
                 }catch (SQLException e){
+                    Toast.makeText(getApplicationContext(),"Their is an error...",Toast.LENGTH_LONG).show();
                     e.printStackTrace();
+                    return null;
                 }
-                return data;
+            }
+            public void deleverresult(Cursor mData){
+                mTaskData = mData;
+                super.deliverResult(mData);
             }
         };
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
-
+        mAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-
+        mAdapter.swapCursor(null);
     }
 }

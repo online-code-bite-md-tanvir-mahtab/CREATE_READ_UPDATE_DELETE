@@ -32,11 +32,19 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
         // TODO: 2/25/2021 I also need to b bind the view with the proper statement..// and column
 
-
+//        int columnIdIndex = mCursor.getColumnIndex(CURDContract.ListEntry._ID);
+        int idIndex = mCursor.getColumnIndex(CURDContract.ListEntry._ID);
         int columnIndex = mCursor.getColumnIndex(CURDContract.ListEntry.BOOK_NAME);
         mCursor.moveToPosition(position);
+// TODO: 3/17/2021 the problem is heir
+        final int id = mCursor.getInt(idIndex);
         String bookName = mCursor.getString(columnIndex);
+//        int id = mCursor.getInt(columnIdIndex);
+//        holder.itemView.setTag(id);
+
+        holder.itemView.setTag(id);
         holder.mTextView.setText(bookName);
+
     }
 
     @Override

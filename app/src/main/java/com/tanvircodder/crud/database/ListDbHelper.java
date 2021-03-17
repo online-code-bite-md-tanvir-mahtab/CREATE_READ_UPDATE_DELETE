@@ -16,11 +16,14 @@ public class ListDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 //        now I am going to create the table..//
         final String SQL_DATA_TABLE = "CREATE TABLE " + CURDContract.ListEntry.TABLE_NAME + " ( "
-                + CURDContract.ListEntry._ID + "    INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + CURDContract.ListEntry._ID + "    INTEGER PRIMARY KEY AUTOINCREMENT , "
                 + CURDContract.ListEntry.BOOK_NAME + "  TEXT NOT NULL );";
         db.execSQL(SQL_DATA_TABLE);
     }
-
+/*final String SQL_DATA_TABLE = "CREATE TABLE " + CURDContract.ListEntry.TABLE_NAME + " ( "
+                + CURDContract.ListEntry._ID + "    INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + CURDContract.ListEntry.BOOK_NAME + "  TEXT NOT NULL );";
+        db.execSQL(SQL_DATA_TABLE);*/
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 

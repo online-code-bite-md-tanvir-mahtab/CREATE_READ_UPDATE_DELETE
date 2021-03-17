@@ -90,7 +90,29 @@ public class ListProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+//        geting the access from the cursor..//
+        final SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        int match = sUriMatcher.match(uri);
+        int rowsDeleted;
+        switch (match){
+            case CRUD:
+                rowsDeleted = database.delete(CURDContract.ListEntry.TABLE_NAME,selection,selectionArgs);
+                break;
+            case CRUD_WITH_ID:
+                String id = uri.getPathSegments().get(1);
+                selection = CURDContract.ListEntry._ID + "=?";
+                selectionArgs = new String[]{id};
+                rowsDeleted   = database.delete(CURDContract.ListEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            default:
+                throw new SQLException("Problem deleting the data to the uri :" + uri);
+        }
+        if (rowsDeleted !=0){
+            getContext().getContentResolver().notifyChange(uri,null);
+        }
+        return rowsDeleted;
     }
 
     @Override

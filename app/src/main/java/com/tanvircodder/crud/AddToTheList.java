@@ -24,7 +24,7 @@ import com.tanvircodder.crud.database.CURDContract;
 
 public class AddToTheList extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 //    nwo i am going to have the loader id ...//
-    private static final int LOADER_ID = 1;
+    private static final int LOADER_ID = 353;
 //    now i need to declare the uri..//
     private Uri mUri;
     private static final String LOG_TAG = AddToTheList.class.getSimpleName();
@@ -67,6 +67,9 @@ public class AddToTheList extends AppCompatActivity implements LoaderManager.Loa
                     finish();
                 }
             }else {
+                if (mUri == null){
+                    Toast.makeText(this,"The uri is empty",Toast.LENGTH_SHORT).show();
+                }
                 // TODO: 3/21/2021 thier is some problem
                 int rowsDeleted = getContentResolver().update(mUri,values,null,null);
                 if (rowsDeleted == 0){
@@ -83,7 +86,7 @@ public class AddToTheList extends AppCompatActivity implements LoaderManager.Loa
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-     /*   String[] projectio = {
+        String[] projectio = {
                 CURDContract.ListEntry.BOOK_NAME
         };
         switch (id){
@@ -95,36 +98,36 @@ public class AddToTheList extends AppCompatActivity implements LoaderManager.Loa
                         null);
             default:
                 throw new  RuntimeException("Loader Not Implemented : " + id);
-        }*/
-        return new AsyncTaskLoader<Cursor>(this) {
-            Cursor mData = null;
-            @Override
-            protected void onStartLoading() {
-                if (mData != null){
-                    deleverResult(mData);
-                }else {
-                    forceLoad();
-                }
-            }
-
-            @Nullable
-            @Override
-            public Cursor loadInBackground() {
-                try {
-                    return getContentResolver().query(mUri,
-                            null,
-                            null,
-                            null,
-                            null);
-                }catch (SQLException e){
-                    return  null;
-                }
-            }
-            public void deleverResult(Cursor data){
-                mData = data;
-                super.deliverResult(data);
-            }
-        };
+        }
+//        return new AsyncTaskLoader<Cursor>(this) {
+//            Cursor mData = null;
+//            @Override
+//            protected void onStartLoading() {
+//                if (mData != null){
+//                    deleverResult(mData);
+//                }else {
+//                    forceLoad();
+//                }
+//            }
+//
+//            @Nullable
+//            @Override
+//            public Cursor loadInBackground() {
+//                try {
+//                    return getContentResolver().query(mUri,
+//                            null,
+//                            null,
+//                            null,
+//                            null);
+//                }catch (SQLException e){
+//                    return  null;
+//                }
+//            }
+//            public void deleverResult(Cursor data){
+//                mData = data;
+//                super.deliverResult(data);
+//            }
+//        };
     }
 
     @Override

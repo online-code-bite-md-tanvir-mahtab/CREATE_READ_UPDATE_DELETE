@@ -51,6 +51,18 @@ public class ListProvider extends ContentProvider {
                         null,
                         sortOrder);
                 break;
+            case CRUD_WITH_ID:
+                String id = uri.getLastPathSegment();
+                selection = CURDContract.ListEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(id)};
+                cursor = database.query(CURDContract.ListEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
             default:
                 throw new SQLException("faild to load data");
         }
@@ -100,8 +112,8 @@ public class ListProvider extends ContentProvider {
                 break;
             case CRUD_WITH_ID:
                 String id = uri.getPathSegments().get(1);
-                selection = CURDContract.ListEntry._ID + "=?";
-                selectionArgs = new String[]{id};
+                selection =CURDContract.ListEntry._ID +"=?";
+                selectionArgs = new String[]{String.valueOf(id)};
                 rowsDeleted   = database.delete(CURDContract.ListEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
@@ -117,6 +129,28 @@ public class ListProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        final SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        int rowsUpdated;
+        int match = sUriMatcher.match(uri);
+        switch (match){
+            case CRUD:
+                rowsUpdated = database.update(CURDContract.ListEntry.TABLE_NAME,values,null,null);
+                break;
+            case CRUD_WITH_ID:
+                String id = uri.getLastPathSegment();
+                selection = CURDContract.ListEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(id)};
+                rowsUpdated = database.update(CURDContract.ListEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
+                break;
+            default:
+                throw  new SQLException("The update is cann't be performed :" + uri);
+        }
+        if (rowsUpdated != 0){
+            getContext().getContentResolver().notifyChange(uri,null);
+        }
+        return rowsUpdated;
     }
 }

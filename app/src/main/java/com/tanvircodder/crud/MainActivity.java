@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.tanvircodder.crud.database.CURDContract;
 
 public class MainActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,ListAdapter.clikeMyListener {
     private static final int LOADER_ID = 0;
 //    nwo i am going to declare the recyclerView../
     RecyclerView mRecyclerView;
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 //        now I need to set teh adapter to the view..//
 //        creating the instance of the adapter class..//
-        mAdapter = new ListAdapter(this);
+        mAdapter = new ListAdapter(this,this);
         mRecyclerView.setAdapter(mAdapter);
         getSupportLoaderManager().initLoader(LOADER_ID,null,this);
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -55,30 +55,30 @@ public class MainActivity extends AppCompatActivity implements
                 String stringIds = Integer.toString(id);
                 Uri uri = CURDContract.ListEntry.CONTENT_URI;
                 // Here is where you'll implement swipe to delete
-                uri = uri.buildUpon().appendPath(stringIds).build();
+                uri = uri.buildUpon().appendEncodedPath(stringIds).build();
                 getContentResolver().delete(uri,null,null);
                 getSupportLoaderManager().restartLoader(LOADER_ID,null,MainActivity.this);
             }
         }).attachToRecyclerView(mRecyclerView);
+//        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+//            @Override
+//            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+//                return false;
+//            }
+//
+//            @Override
+//            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+//                int id = (int) viewHolder.itemView.getTag();
+//                String stringId = Integer.toString(id);
+//                Intent intent = new Intent(MainActivity.this,AddToTheList.class);
+//                Uri uri = CURDContract.ListEntry.CONTENT_URI;
+//                uri = uri.buildUpon().appendEncodedPath(stringId).build();
+//                intent.setData(uri);
+//                startActivity(intent);
+//            }
+//        }).attachToRecyclerView(mRecyclerView);
 
     }
-/* todo 
-    E/AndroidRuntime: FATAL EXCEPTION: main
-    Process: com.tanvircodder.crud, PID: 25904
-    android.database.SQLException: Problem inserting the data to the uri :content://com.tanvircodder.crud.database/0
-    at com.tanvircodder.crud.database.ListProvider.delete(ListProvider.java:108)
-    at android.content.ContentProvider$Transport.delete(ContentProvider.java:345)
-    at android.content.ContentResolver.delete(ContentResolver.java:1642)
-    at com.tanvircodder.crud.MainActivity$1.onSwiped(MainActivity.java:59)
-    at androidx.recyclerview.widget.ItemTouchHelper$4.run(ItemTouchHelper.java:712)
-    at android.os.Handler.handleCallback(Handler.java:790)
-    at android.os.Handler.dispatchMessage(Handler.java:99)
-    at android.os.Looper.loop(Looper.java:164)
-    at android.app.ActivityThread.main(ActivityThread.java:7000)
-    at java.lang.reflect.Method.invoke(Native Method)
-    at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:441)
-    at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1408)
-*/
 
 
     @Override
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements
             protected void onStartLoading() {
                 super.onStartLoading();
                 if (mTaskData != null){
-                    deleverresult(mTaskData);
+                    daliverResult(mTaskData);
                 }else {
                     forceLoad();
                 }
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements
                 };
                 try {
                     return getContentResolver().query(CURDContract.ListEntry.CONTENT_URI,
-                            projection,
+                            null,
                             null,
                             null,
                             null);
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements
                     return null;
                 }
             }
-            public void deleverresult(Cursor mData){
+            public void daliverResult(Cursor mData){
                 mTaskData = mData;
                 super.deliverResult(mData);
             }
@@ -147,5 +147,15 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onClick(int position) {
+        Intent intent = new Intent(this,AddToTheList.class);
+        String stringId = Integer.toString(position);
+        Uri intentUri = ContentUris.withAppendedId(CURDContract.ListEntry.CONTENT_URI,position);
+        intent.setData(intentUri);
+        Toast.makeText(this,"The uri: " + intentUri,Toast.LENGTH_SHORT).show();
+        startActivity(intent);
     }
 }

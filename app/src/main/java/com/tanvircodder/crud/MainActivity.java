@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(int position) {
+        // TODO: 3/21/2021 I am pss 
         Intent intent = new Intent(this,AddToTheList.class);
         String stringId = Integer.toString(position);
         Uri intentUri = ContentUris.withAppendedId(CURDContract.ListEntry.CONTENT_URI,position);

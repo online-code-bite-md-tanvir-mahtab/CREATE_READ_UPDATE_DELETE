@@ -41,7 +41,7 @@ public class AddToTheList extends AppCompatActivity implements LoaderManager.Loa
             Toast.makeText(getApplicationContext(),"Thier is no data ",Toast.LENGTH_SHORT).show();
             getSupportActionBar().setTitle("Add To List");
         }else {
-            Toast.makeText(getApplicationContext(),"Their is some data",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"Their is some data :" + mUri,Toast.LENGTH_SHORT).show();
             //            if their is no data then the add to list will become the update to the list..//
             getSupportActionBar().setTitle("Update");
         }
@@ -67,7 +67,8 @@ public class AddToTheList extends AppCompatActivity implements LoaderManager.Loa
                     finish();
                 }
             }else {
-                int rowsDeleted = getContentResolver().update(CURDContract.ListEntry.CONTENT_URI,values,null,null);
+                // TODO: 3/21/2021 thier is some problem
+                int rowsDeleted = getContentResolver().update(mUri,values,null,null);
                 if (rowsDeleted == 0){
                     Toast.makeText(this,"The data wasen't able to update",Toast.LENGTH_SHORT).show();
                 }else {
@@ -128,6 +129,7 @@ public class AddToTheList extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+        // TODO: 3/21/2021 I am having some problem while geting the data....
         mEditText = (EditText) findViewById(R.id.edit_text);
 //        nwo i am going to create an boolean variable and set it to false..//
         boolean theirIsData = false;
